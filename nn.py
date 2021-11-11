@@ -18,8 +18,25 @@ class NeuralNetwork:
         self.cache = {'z1': z1, 'h': h, 'z2': z2, 'o': o}
         return o
 
-    def backward(self, x, error):
-        pass
+    def backward(self, x, error, mu=.9, learning_rate=1e-3):
+        db2 = Softmax().gradient(self.cache['z2']) * error
+        dw2 = np.dot(self.cache['h'], db2.T)
+
+        db1 = ReLU.gradient(self.cache['z1']) * np.dot(db2.T, self.parameters['w2']).T
+        dw1 = np.dot(x, db1.T)
+
+        # Update parameters
+        velocity_prev = self.velocity
+
+        self.velocity['w1'] = mu * self.velocity['w1'] - learning_rate * dw1
+        self.velocity['b1'] = mu * self.velocity['b1'] - learning_rate * np.mean(db1)
+        self.velocity['w2'] = mu * self.velocity['w2'] - learning_rate * dw2
+        self.velocity['b2'] = mu * self.velocity['b2'] - learning_rate * np.mean(db2)
+
+        self.parameters['w1'] += -mu * velocity_prev['w1'] + (1 + mu) * self.velocity['w1']
+        self.parameters['b1'] += -mu * velocity_prev['b1'] + (1 + mu) * self.velocity['b1']
+        self.parameters['w2'] += -mu * velocity_prev['w2'] + (1 + mu) * self.velocity['w2']
+        self.parameters['b2'] += -mu * velocity_prev['b2'] + (1 + mu) * self.velocity['b2']
 
     @staticmethod
     def linear_function(w, x, b):
