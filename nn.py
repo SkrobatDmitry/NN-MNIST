@@ -28,9 +28,9 @@ class NeuralNetwork:
         # Update parameters
         velocity_prev = self.velocity
 
-        self.velocity['w1'] = mu * self.velocity['w1'] - learning_rate * dw1
+        self.velocity['w1'] = mu * self.velocity['w1'] - learning_rate * dw1.T
         self.velocity['b1'] = mu * self.velocity['b1'] - learning_rate * np.mean(db1)
-        self.velocity['w2'] = mu * self.velocity['w2'] - learning_rate * dw2
+        self.velocity['w2'] = mu * self.velocity['w2'] - learning_rate * dw2.T
         self.velocity['b2'] = mu * self.velocity['b2'] - learning_rate * np.mean(db2)
 
         self.parameters['w1'] += -mu * velocity_prev['w1'] + (1 + mu) * self.velocity['w1']
